@@ -20,7 +20,7 @@ import org.w3c.dom.*;
 
 import java.util.Properties;
 
-// WindowHandler prüft, ob das Fenster minimiert ist oder nicht
+// WindowHandler prÃ¼ft, ob das Fenster minimiert ist oder nicht
 class WindowHandler extends WindowAdapter implements WindowListener, WindowFocusListener, WindowStateListener {
     public String activeState;
     public void windowClosed(WindowEvent e) {
@@ -103,7 +103,7 @@ public class ChatFrame extends JFrame {
     
     public ChatFrame() { 
     
-        setTitle("IM - Instant messager");
+        setTitle("IM 0.1 Client alpha");
         setLocationRelativeTo(null);
         setResizable(true);        
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
