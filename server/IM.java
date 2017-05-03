@@ -30,7 +30,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-// DOM - für XML?
+// DOM - fÃ¼r XML?
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -84,7 +84,7 @@ class GUI extends JFrame {
         if(SystemTray.isSupported()){
 
             tray=SystemTray.getSystemTray();
-            java.net.URL imageURL = GUI.class.getResource("im.png");
+            URL imageURL = GUI.class.getResource("im.png");
             ImageIcon ico = new ImageIcon(imageURL);        
             Image image=Toolkit.getDefaultToolkit().getImage(imageURL);            
             ActionListener exitListener=new ActionListener() {
@@ -136,7 +136,8 @@ class GUI extends JFrame {
                 }
             }
         });
-        setIconImage(Toolkit.getDefaultToolkit().getImage("im.png"));                
+        URL imageURL = GUI.class.getResource("im.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));                
         
         fileChooser = new JFileChooser();
                  
