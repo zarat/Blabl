@@ -506,8 +506,7 @@ public class IM extends JFrame {
         prop = new Properties();
         InputStream input = null;
         try {
-            String filename = "config.properties";
-            input = IM.class.getClassLoader().getResourceAsStream(filename); 
+            input = new FileInputStream("config.properties");
             prop.load(input);
             return prop.getProperty(proper);
         } 
