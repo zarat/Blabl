@@ -50,26 +50,17 @@ public class SocketClient implements Runnable{
     @Override
     public void run() {
         boolean keepRunning = true;
-        ui.threadRunning = 1;
+        ui.threadRunning = true;
         while(keepRunning) {
             try {
-                Message msg = (Message) In.readObject();
-                System.out.println("Incoming : "+msg.toString());                
+                Message msg = (Message) In.readObject();                
                 if(msg.type.equals("message")) {
                     if(msg.recipient.equals(ui.username)) {
-                    
                         if(!msg.sender.equals(ui.username)) {
-                        
-                        System.out.println("error #1");
-                        
-                            // recipient private
                             if(ui.windowHandler.getActiveState() == "iconified") {
-                            
                                 if(ui.pr("sound").equals("on")) {                            
-                            
-                                //int n = JOptionPane.showConfirmDialog(null,"Sie haben ungelesene Privatnachrichten","ZARAT IM v1.1", JOptionPane.YES_NO_OPTION);
-                                ui.print_private("["+ msg.sender + "] " + msg.content);
-                                System.out.println(ui.pr("sound"));
+                                    ui.print_private("["+ msg.sender + "] " + msg.content);
+                                    System.out.println(ui.pr("sound"));
                                     try {
                                         URL url = this.getClass().getClassLoader().getResource("res/pm.wav");
                                         AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
@@ -83,38 +74,24 @@ public class SocketClient implements Runnable{
                                     } catch (LineUnavailableException e) {
                                         e.printStackTrace();
                                     } catch(Exception e) { e.printStackTrace(); }
-                                    System.out.println("error #4");                                    
-                                    //ui.toFront();
-                                    
+                                    System.out.println("error #4");                                                                        
                                 } else {
-                                
-
                                 ui.print_private("["+ msg.sender + "] " + msg.content);
                                 System.out.println(ui.pr("sound"));
-                                 
                                 }                               
-            
                             } else {
                                 ui.print_private("["+ msg.sender + "] " + msg.content);
-                                System.out.println("error #5");
                             }
                         } 
                     } else {
                         if(!msg.sender.equals(ui.username)) {
-                            // recipient ALL
                             ui.print_default("["+msg.sender +"] " + msg.content);
                         }
                     }
-                    if(!msg.content.equals(".bye") && !msg.sender.equals(ui.username)) {
-                        //ui.clientThread.stop(); 
-                    }
-                    /*
-                    else if(msg.content.equals(".bye") && msg.sender.equals(ui.username)) {
+                    if(msg.content.equals(".bye") && msg.sender.equals(ui.username)) {
                         ui.clientThread.stop();
                         ui.threadRunning = false;
                     }
-                    */
-                    ui.Chat.setCaretPosition(ui.doc.getLength());
                 }
                 else if(msg.type.equals("login")) {
                     if(msg.content.equals("TRUE")) {
@@ -122,7 +99,6 @@ public class SocketClient implements Runnable{
                         ui.ButtonRegistrieren.setEnabled(false);                        
                         ui.ButtonNachricht.setEnabled(true); 
                         ui.ButtonDateiSuchen.setEnabled(true);
-                        String col = "";
                         ui.print_default("Hallo " + msg.recipient + ", " + ui.pr("welcome"));                        
                         ui.FieldUsername.setEnabled(false); 
                         ui.FieldPasswort.setEnabled(false);
@@ -145,7 +121,8 @@ public class SocketClient implements Runnable{
                         boolean exists = false;
                         for(int i = 0; i < ui.model.getSize(); i++) {
                             if(ui.model.getElementAt(i).equals(msg.content)) {
-                                exists = true; break;
+                                exists = true; 
+                                break;
                             }
                         }
                         if(!exists){ 
@@ -158,7 +135,7 @@ public class SocketClient implements Runnable{
                     if(msg.content.equals("TRUE")) {
                         ui.ButtonLogin.setEnabled(false); ui.ButtonRegistrieren.setEnabled(false);
                         ui.ButtonNachricht.setEnabled(true); ui.ButtonDateiSuchen.setEnabled(true);
-                        ui.print_default("[SERVER] SIGNUP OK");
+                        ui.print_default("erfolgreich registriert");
                     }
                     else{
                         ui.print_error("Registrierungsfehler");
@@ -175,7 +152,7 @@ public class SocketClient implements Runnable{
                             ui.model.removeElementAt(i);
                         }                        
                         ui.clientThread.stop();
-                        ui.threadRunning = 0;
+                        ui.threadRunning = false;
                     }
                     else{
                         ui.model.removeElement(msg.content);
@@ -192,7 +169,6 @@ public class SocketClient implements Runnable{
                             Download dwn = new Download(saveTo, ui);
                             Thread t = new Thread(dwn);
                             t.start();
-                            //send(new Message("upload_res", (""+InetAddress.getLocalHost().getHostAddress()), (""+dwn.port), msg.sender));
                             send(new Message("upload_res", ui.username, (""+dwn.port), msg.sender));
                         }
                         else{
@@ -217,7 +193,7 @@ public class SocketClient implements Runnable{
                     }
                 }
                 else{
-                    ui.print_error("UNKNOWN ERROR");
+                    ui.print_error("unbekannter Fehler");
                 }
             }
             catch(Exception ex) {
@@ -229,9 +205,8 @@ public class SocketClient implements Runnable{
                     ui.model.removeElementAt(i);
                 }                
                 ui.clientThread.stop();                
-                System.out.println("Exception SocketClient run()");
                 ex.printStackTrace();
-                ui.threadRunning = 0;
+                ui.threadRunning = false;
             }
         }
     }    
@@ -247,6 +222,6 @@ public class SocketClient implements Runnable{
     }    
     public void closeThread(Thread t){
         t = null;
-        ui.threadRunning = 0;
+        ui.threadRunning = false;
     }
 }
