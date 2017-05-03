@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.net.URL;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -120,7 +121,7 @@ public class ChatFrame extends JFrame {
         if(SystemTray.isSupported()){
 
             tray=SystemTray.getSystemTray();
-            java.net.URL imageURL = ChatFrame.class.getResource("im.png");
+            URL imageURL = ChatFrame.class.getResource("im.png");
             ImageIcon ico = new ImageIcon(imageURL);        
             Image image=Toolkit.getDefaultToolkit().getImage(imageURL);            
             ActionListener exitListener=new ActionListener() {
@@ -172,7 +173,8 @@ public class ChatFrame extends JFrame {
                 }
             }
         });
-        setIconImage(Toolkit.getDefaultToolkit().getImage("im.png"));
+        URL imageURL = ChatFrame.class.getResource("im.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));
         
         kit = new HTMLEditorKit();
         doc = new HTMLDocument();
