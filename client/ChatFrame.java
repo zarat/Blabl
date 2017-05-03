@@ -186,6 +186,8 @@ public class ChatFrame extends JFrame {
         
         Chat.setEditorKit(kit);
         Chat.setDocument(doc);
+        Chat.setEditable(false);
+        Chat.setFocusable(false);
 
         Userlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         Userlist.setModel((model = new DefaultListModel()));        
