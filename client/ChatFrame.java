@@ -58,7 +58,7 @@ public class ChatFrame extends JFrame {
     public WindowHandler windowHandler;
     public HTMLEditorKit kit;
     public HTMLDocument doc;
-    public int threadRunning = 0;
+    public boolean threadRunning = true;
     
     public int fontSize = 4;
     public String frameTitle;
@@ -188,7 +188,7 @@ public class ChatFrame extends JFrame {
         Chat.setDocument(doc);
         Chat.setEditable(false);
         Chat.setFocusable(false);
-
+                                
         Userlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         Userlist.setModel((model = new DefaultListModel()));        
         
@@ -272,12 +272,14 @@ public class ChatFrame extends JFrame {
                 
             controlPanel = new JPanel();        
                 FieldNachricht = new JTextField();
-                FieldNachricht.addActionListener(new ActionListener() {                
+                FieldNachricht.addActionListener(new ActionListener() {
+                
                     @Override
                     public void actionPerformed(ActionEvent e) {
                        ButtonNachrichtActionPerformed(e);
                     }
-                });
+                });                
+                
                 ButtonNachricht = new JButton();
                 ButtonNachricht.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -526,6 +528,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
     
     public void print_error(String str) { 
@@ -539,6 +542,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
     
     public void print_warning(String str) {
@@ -552,6 +556,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
       
     public void print_private(String str) {
@@ -565,6 +570,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
       
     public boolean isWin32() {
