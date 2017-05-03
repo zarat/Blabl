@@ -30,7 +30,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-// DOM - für XML?
+// DOM - fÃ¼r XML?
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -108,7 +108,7 @@ class GUI extends JFrame {
                 }
             });
             popup.add(defaultItem);
-            trayIcon=new TrayIcon(image, "IM", popup);
+            trayIcon=new TrayIcon(image, "IM Server", popup);
             trayIcon.setImageAutoSize(true);
         }
         addWindowStateListener(new WindowStateListener() {
