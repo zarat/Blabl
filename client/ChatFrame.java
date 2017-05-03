@@ -270,6 +270,12 @@ public class ChatFrame extends JFrame {
                 
             controlPanel = new JPanel();        
                 FieldNachricht = new JTextField();
+                FieldNachricht.addActionListener(new ActionListener() {                
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                       ButtonNachrichtActionPerformed(e);
+                    }
+                });
                 ButtonNachricht = new JButton();
                 ButtonNachricht.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
