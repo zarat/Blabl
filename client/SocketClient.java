@@ -31,12 +31,12 @@ public class SocketClient implements Runnable{
     public int port;
     public String serverAddr;
     public Socket socket;  
-    public IM ui;
+    public Blabl ui;
     public StyledDocument doc;
     public ObjectInputStream In;
     public ObjectOutputStream Out;
     
-    public SocketClient(IM frame, StyledDocument doc) throws IOException {
+    public SocketClient(Blabl frame, StyledDocument doc) throws IOException {
         ui = frame; 
         serverAddr = ui.serverAddr; 
         port = ui.port; 
