@@ -1,2 +1,2 @@
 # Blabl
-Instant Messenger in Java mit Anmeldung, Filesharing, Gruppen- und Einzelchat.
+Instant Messenger in Java mit Registrierung, Filesharing, Gruppen- und Einzelchat.
