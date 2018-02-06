@@ -78,7 +78,7 @@ class GUI extends JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
         }    
     
-        setTitle("IM 0.1 Server alpha"); 
+        setTitle("Blabl 0.1 Server"); 
         //setPreferredSize(new Dimension(700,300));
         setResizable(false);
         if(SystemTray.isSupported()){
@@ -108,7 +108,7 @@ class GUI extends JFrame {
                 }
             });
             popup.add(defaultItem);
-            trayIcon=new TrayIcon(image, "IM Server", popup);
+            trayIcon=new TrayIcon(image, "Blabl Server", popup);
             trayIcon.setImageAutoSize(true);
         }
         addWindowStateListener(new WindowStateListener() {
@@ -232,7 +232,7 @@ class GUI extends JFrame {
     
     public void closeWindow() {
         String ObjButtons[] = {"Beenden","abbrechen"};
-        int PromptResult = JOptionPane.showOptionDialog(null,"Wollen Sie die SimpleMail wirklich beenden?","SimpleMail beenden",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[0]);
+        int PromptResult = JOptionPane.showOptionDialog(null,"Wollen Sie die Blabl wirklich beenden?","Blabl beenden",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[0]);
         if(PromptResult==JOptionPane.YES_OPTION) {
             System.exit(0);
         }    
