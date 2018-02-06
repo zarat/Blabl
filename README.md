@@ -1,2 +1,2 @@
-# IM
+# Blabl
 Instant Messenger in Java mit Anmeldung, Filesharing, Gruppen- und Einzelchat.
