@@ -11,9 +11,9 @@ public class Upload implements Runnable {
     public FileInputStream In;
     public OutputStream Out;
     public File file;
-    public IM ui;
+    public Blabl ui;
     
-    public Upload(String addr, int port, File filepath, IM frame) {
+    public Upload(String addr, int port, File filepath, Blabl frame) {
         super();
         try {
             file = filepath; ui = frame;
