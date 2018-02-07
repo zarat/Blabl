@@ -11,7 +11,8 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.swing.text.DefaultCaret;
 
-import oracle.jrockit.jfr.JFR;
+// not available in OpenJDK :(
+//import oracle.jrockit.jfr.JFR;
 
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
