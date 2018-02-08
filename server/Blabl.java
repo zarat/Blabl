@@ -38,7 +38,8 @@ import org.w3c.dom.Element;
 public class Blabl { 
 
     public static void main(String[] args) {     
-        JFrame gui = new GUI(); 
+        System.setProperty("java.net.preferIPv4Stack","true");
+	JFrame gui = new GUI(); 
         gui.show();        
     } 
     
@@ -240,7 +241,7 @@ class GUI extends JFrame {
     
     private void XMLButtonAction(java.awt.event.ActionEvent evt) {    
         fileChooser.setCurrentDirectory(new File("."));        
-        File XMLConfigFile = new File("./Data.xml"); 
+        File XMLConfigFile = new File("Data.xml"); 
         if (!XMLConfigFile.exists()) {
             try {        
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -251,7 +252,7 @@ class GUI extends JFrame {
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
                 DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult(new File("./Data.xml"));                
+                StreamResult result = new StreamResult(new File("Data.xml"));                
                 transformer.transform(source, result);                        
         	} catch (ParserConfigurationException pce) {
                 pce.printStackTrace();

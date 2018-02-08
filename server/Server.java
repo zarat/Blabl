@@ -46,12 +46,12 @@ public class Server extends Thread implements Runnable {
             input = new FileInputStream("server.ini");
             prop.load(input);    
             return prop.getProperty(p);    
-        } catch (IOException ex) {} 
+        } catch (IOException ex) { ex.printStackTrace(); } 
         finally {
             if (input != null) {
                 try {
                     input.close();
-                } catch (IOException e) {}
+                } catch (IOException e) { e.printStackTrace(); }
             }
         }    
         return "";   
@@ -59,11 +59,11 @@ public class Server extends Thread implements Runnable {
     	
     public void stopen() {
         for(int i = 0; i < clientCount; i++) {
-            try { clients[i].close(); }catch(IOException ioe) {}
+            try { clients[i].close(); }catch(IOException ioe) { ioe.printStackTrace(); }
         }
         try {
             server.close();
-        } catch(IOException ioe) {}
+        } catch(IOException ioe) { ioe.printStackTrace(); }
     }
     
     private void addThread(Socket socket) {  
@@ -80,7 +80,6 @@ public class Server extends Thread implements Runnable {
     public synchronized void handle(int ID, Message msg) {
         if (msg.content.equals(".bye")) {
             Announce("signout", "SERVER", msg.sender);
-            logger.log(msg.sender + " hat sich abgemeldet");
             remove(ID); 
         } else {
             if(msg.type.equals("login")) {
@@ -90,7 +89,6 @@ public class Server extends Thread implements Runnable {
                         clients[findClient(ID)].send(new Message("login", "SERVER", "TRUE", msg.sender));
                         Announce("newuser", "SERVER", msg.sender);
                         SendUserList(msg.sender);
-                        logger.log(msg.sender + " hat sich angemeldet");
                     } else {
                         clients[findClient(ID)].send(new Message("login", "SERVER", "FALSE", msg.sender));
                     }     
@@ -107,10 +105,10 @@ public class Server extends Thread implements Runnable {
                     clients[findClient(ID)].send(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));
                 }
             } else if(msg.type.equals("test")) {
-                clients[findClient(ID)].send(new Message("test", "SERVER", "OK", msg.sender));
+		clients[findClient(ID)].send(new Message("test", "SERVER", "OK", msg.sender));
             } else if(msg.type.equals("signup")) {
                 if(findUserThread(msg.sender) == null) {
-                    logger.log(msg.sender + " hat sich registriert");
+		    System.out.println("clientsocket");
                     if(!db.userExists(msg.sender)){
                         db.addUser(msg.sender, msg.content);
                         clients[findClient(ID)].username = msg.sender;
@@ -123,8 +121,11 @@ public class Server extends Thread implements Runnable {
                         clients[findClient(ID)].send(new Message("signup", "SERVER", "FALSE", msg.sender));
                     }
                 } else {                
+		    System.out.println("clientsocket OK");
                     clients[findClient(ID)].send(new Message("signup", "SERVER", "FALSE", msg.sender));               
                 }
+		System.out.println("XXX");
+
             } else if(msg.type.equals("upload_req")) {
                 if(msg.recipient.equals("All")) {
                     Announce("upload_req", msg.sender, msg.content);  
