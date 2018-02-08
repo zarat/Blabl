@@ -108,7 +108,6 @@ public class Server extends Thread implements Runnable {
 		clients[findClient(ID)].send(new Message("test", "SERVER", "OK", msg.sender));
             } else if(msg.type.equals("signup")) {
                 if(findUserThread(msg.sender) == null) {
-		    System.out.println("clientsocket");
                     if(!db.userExists(msg.sender)){
                         db.addUser(msg.sender, msg.content);
                         clients[findClient(ID)].username = msg.sender;
@@ -121,10 +120,8 @@ public class Server extends Thread implements Runnable {
                         clients[findClient(ID)].send(new Message("signup", "SERVER", "FALSE", msg.sender));
                     }
                 } else {                
-		    System.out.println("clientsocket OK");
                     clients[findClient(ID)].send(new Message("signup", "SERVER", "FALSE", msg.sender));               
                 }
-		System.out.println("XXX");
 
             } else if(msg.type.equals("upload_req")) {
                 if(msg.recipient.equals("All")) {
