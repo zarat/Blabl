@@ -1,4 +1,4 @@
 # Blabl
 Instant Messenger in Java mit Registrierung, Filesharing, Gruppen- und Einzelchat.
 
-Kompilierbar mit Oracle Java UND OpenJDK
+Kompilierbar ohne Abhängigkeiten mit Oracle Java und OpenJDK
