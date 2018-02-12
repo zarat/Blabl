@@ -259,7 +259,11 @@ public class Blabl extends JFrame {
                 LabelUsername = new JLabel();
                 LabelPasswort = new JLabel();
                 FieldUsername = new JTextField();
+		FieldUsername.setEnabled(false);
+		FieldUsername.setEnabled(false);
                 FieldPasswort = new JTextField();
+		FieldPasswort.setEditable(false);
+		FieldPasswort.setEnabled(false);
                 ButtonLogin = new JButton();
                 ButtonLogin.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -598,6 +602,12 @@ public class Blabl extends JFrame {
                 client = new SocketClient(this, doc);
                 clientThread = new Thread(client);
                 clientThread.start();
+		FieldServer.setEnabled(false);
+		FieldPort.setEnabled(false);
+		FieldUsername.setEnabled(true);
+		FieldUsername.setEditable(true);
+		FieldPasswort.setEnabled(true);
+		FieldPasswort.setEditable(true);
                 client.send(new Message("test", "test", "test", "SERVER"));
             } catch(Exception ex) {
                 print_error("Server nicht gefunden");

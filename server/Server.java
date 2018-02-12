@@ -194,6 +194,7 @@ public class Server extends Thread implements Runnable {
                 clients[findClient(ID)].publicKey = msg.content;
                 // and send it to the client
                 clients[findClient(ID)].send(new Message("publickey", "SERVER", "OK", msg.sender));
+		System.out.println(clients[findClient(ID)].username + " : " + clients[findClient(ID)].publicKey);
                     
             }
                         

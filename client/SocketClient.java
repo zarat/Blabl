@@ -127,8 +127,10 @@ public class SocketClient implements Runnable{
                         ui.ButtonRegistrieren.setEnabled(false);                        
                         ui.ButtonNachricht.setEnabled(true); 
                         ui.ButtonDateiSuchen.setEnabled(true);
-                        ui.FieldUsername.setEnabled(false); 
-                        ui.FieldPasswort.setEnabled(false);
+			ui.FieldUsername.setEditable(false);
+			ui.FieldUsername.setEnabled(false);
+			ui.FieldPasswort.setEditable(false);
+			ui.FieldPasswort.setEnabled(false);
                         ui.print_default("Du bist als " + msg.recipient + " angemeldet.");
                         username = msg.recipient;
                         String pk = new String(Base64.getEncoder().encode(publicKey.getEncoded()));
@@ -198,8 +200,10 @@ public class SocketClient implements Runnable{
                         ui.ButtonVerbinden.setEnabled(true); 
                         ui.ButtonNachricht.setEnabled(false); 
                         ui.FieldServer.setEditable(true); 
-                        ui.FieldPort.setEditable(true);                        
-                        for(int i = 1; i < ui.model.size(); i++){
+                        ui.FieldServer.setEnabled(true);
+			ui.FieldPort.setEditable(true);                        
+                        ui.FieldPort.setEnabled(true);
+			for(int i = 1; i < ui.model.size(); i++){
                             ui.model.removeElementAt(i);
                         }                        
                         ui.clientThread.stop();
