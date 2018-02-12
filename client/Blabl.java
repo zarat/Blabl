@@ -115,7 +115,7 @@ public class Blabl extends JFrame {
     
     public Blabl() { 
     
-        setTitle("Blabl 0.1");
+        setTitle("Blabl 0.2");
         setLocationRelativeTo(null);
         setResizable(true);        
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
