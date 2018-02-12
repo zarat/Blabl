@@ -302,13 +302,13 @@ public class Server extends Thread implements Runnable {
     }
 
     public void AnnounceEncrypted(String type, String sender, String content) {    
-        Message msg = new Message(type, sender, content, "All");  
+        //Message msg = new Message(type, sender, content, "All");
         for(int i = 0; i < clientCount; i++){        
-            if(clients[i].username != msg.sender) {  
+            if(clients[i].username != sender) {  
 			// encrypt it using users public key
 			String encryptedText = "";
 			try {
-			    encryptedText = getEncrypted(msg.content, clients[i].publicKey);
+			    encryptedText = getEncrypted(content, clients[i].publicKey);
 			}
 			catch(NoSuchAlgorithmException nsae) {}
 			catch(NoSuchPaddingException nspe) {}
@@ -316,7 +316,8 @@ public class Server extends Thread implements Runnable {
 			catch(InvalidKeySpecException ikse) {}
 			catch(IllegalBlockSizeException ibse) {}
 			catch(BadPaddingException bpe) {}
-			msg.content = encryptedText;
+
+			Message msg = new Message(type, sender, encryptedText, "All");
                
             		clients[i].send(msg);                
 	          }            
