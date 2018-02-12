@@ -194,17 +194,33 @@ public class Server extends Thread implements Runnable {
                 clients[findClient(ID)].publicKey = msg.content;
                 // and send it to the client
                 clients[findClient(ID)].send(new Message("publickey", "SERVER", "OK", msg.sender));
-		System.out.println(clients[findClient(ID)].username + " : " + clients[findClient(ID)].publicKey);
                     
             }
                         
             // user has sent a message
+            //
+            // message is encrypted with our public key
+            // so first decrypt it using our private key
             else if(msg.type.equals("message")) {
+            
+                // decrypt the creds
+                String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+                String decryptedText = "";
+                try {
+                    decryptedText = getDecrypted(msg.content, priKey);
+                }
+                catch(NoSuchAlgorithmException nsae) {}
+                catch(NoSuchPaddingException nspe) {}
+                catch(InvalidKeyException ike) {}
+                catch(InvalidKeySpecException ikse) {}
+                catch(IllegalBlockSizeException ibse) {}
+                catch(BadPaddingException bpe) {}
+                msg.content = decryptedText;
  
                 // to all users
                 if(msg.recipient.equals("All")) {
 
-                    Announce("message", msg.sender, msg.content);
+                    AnnounceEncrypted("message", msg.sender, msg.content);
                     
                 // or a single user
                 } else {
@@ -241,8 +257,10 @@ public class Server extends Thread implements Runnable {
                         clients[findClient(ID)].send(new Message("signup", "SERVER", "TRUE", msg.sender));
                         String IP = findUserThread(msg.sender).socket.getInetAddress().getHostAddress();
                         clients[findClient(ID)].send(new Message("login", "SERVER", "TRUE", msg.sender));
+                        
                         Announce("newuser", "SERVER", msg.sender);
                         SendUserList(msg.sender);
+                        
                     } else {
                         clients[findClient(ID)].send(new Message("signup", "SERVER", "FALSE", msg.sender));
                     }
@@ -274,10 +292,34 @@ public class Server extends Thread implements Runnable {
         }
     }
     
-    public void Announce(String type, String sender, String content) {
-        Message msg = new Message(type, sender, content, "All");
-        for(int i = 0; i < clientCount; i++){
-            if(clients[i].username != msg.sender) { clients[i].send(msg); }
+    public void Announce(String type, String sender, String content) {    
+        Message msg = new Message(type, sender, content, "All");  
+        for(int i = 0; i < clientCount; i++){        
+            if(clients[i].username != msg.sender) {                 
+            		clients[i].send(msg);                
+	          }            
+        }
+    }
+
+    public void AnnounceEncrypted(String type, String sender, String content) {    
+        Message msg = new Message(type, sender, content, "All");  
+        for(int i = 0; i < clientCount; i++){        
+            if(clients[i].username != msg.sender) {  
+			// encrypt it using users public key
+			String encryptedText = "";
+			try {
+			    encryptedText = getEncrypted(msg.content, clients[i].publicKey);
+			}
+			catch(NoSuchAlgorithmException nsae) {}
+			catch(NoSuchPaddingException nspe) {}
+			catch(InvalidKeyException ike) {}
+			catch(InvalidKeySpecException ikse) {}
+			catch(IllegalBlockSizeException ibse) {}
+			catch(BadPaddingException bpe) {}
+			msg.content = encryptedText;
+               
+            		clients[i].send(msg);                
+	          }            
         }
     }
     
@@ -385,7 +427,38 @@ class ClientThread extends Thread {
             System.out.println("Exception [SocketClient : send(...)]");
         }
     }
+    
+    public static String getEncrypted(String data, String Key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(Key.getBytes())));
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedbytes = cipher.doFinal(data.getBytes());
+        return new String(Base64.getEncoder().encode(encryptedbytes));
+    }
+    
+    public void send_encrypted(Message msg) {
+        System.out.println("Outgoing : " + msg);
+        String encryptedText = "";
+        try {
+            encryptedText = getEncrypted(msg.content, publicKey);
+        }
+        catch(NoSuchAlgorithmException nsae) {}
+        catch(NoSuchPaddingException nspe) {}
+        catch(InvalidKeyException ike) {}
+        catch(InvalidKeySpecException ikse) {}
+        catch(IllegalBlockSizeException ibse) {}
+        catch(BadPaddingException bpe) {}
+        msg.content = encryptedText;
         
+        try {
+            w.writeObject(msg);
+            w.flush();
+        } 
+        catch (IOException e) {
+            System.out.println("Exception [SocketClient : send(...)]");
+        }
+    }
+            
     public int getID() {  
         return ID;
     }

@@ -107,7 +107,15 @@ public class SocketClient implements Runnable{
                 Message msg = (Message) In.readObject();                
                 System.out.println("Incoming : " + msg);
                                 
-                if(msg.type.equals("message")) {                
+                if(msg.type.equals("message")) { 
+
+		    // decrypt the creds
+		    try {
+			String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+			String cipherText = getDecrypted(msg.content, priKey);
+                	msg.content = cipherText;
+		    }catch(Exception e) {}
+		                   
                     if(msg.recipient.equals(ui.username)) {
                         ui.print_private("["+ msg.sender + "] " + msg.content);                             
                     } else {
@@ -133,8 +141,9 @@ public class SocketClient implements Runnable{
 			ui.FieldPasswort.setEnabled(false);
                         ui.print_default("Du bist als " + msg.recipient + " angemeldet.");
                         username = msg.recipient;
+			System.out.println("1: " + username);
                         String pk = new String(Base64.getEncoder().encode(publicKey.getEncoded()));
-                        send(new Message("publickey",username,pk,"SERVER")); 
+                        send(new Message("publickey",username,pk,"SERVER"));
                     } else {
                         ui.print_error("Du konntest nicht angemeldet werden.");
                     }
@@ -166,6 +175,14 @@ public class SocketClient implements Runnable{
                                 
                 // new user has entered the room, so we have to update the userlist
                 else if(msg.type.equals("newuser")) {
+                
+        		    // decrypt the creds
+        		    try {
+                    String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+                    String cipherText = getDecrypted(msg.content, priKey);
+                    msg.content = cipherText;
+        		    }catch(Exception e) {}
+                
                     if(!msg.content.equals(ui.username)) {
                         boolean exists = false;
                         for(int i = 0; i < ui.model.getSize(); i++) {

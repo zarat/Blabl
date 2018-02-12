@@ -636,7 +636,7 @@ public class Blabl extends JFrame {
             } else {
                 print_private(" an ["+target+"] " + msg);
             }
-            client.send(new Message("message", username, msg, target));
+            client.send_encrypted(new Message("message", username, msg, target));
             Chat.setCaretPosition(Chat.getDocument().getLength());
         }
     }
