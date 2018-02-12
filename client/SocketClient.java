@@ -26,6 +26,14 @@ import java.io.*;
 import java.net.URL;
 import javax.sound.sampled.*;
 
+// RSA Encryption
+import java.security.*;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+import javax.crypto.*;
+
 public class SocketClient implements Runnable{
     
     public int port;
@@ -36,7 +44,23 @@ public class SocketClient implements Runnable{
     public ObjectInputStream In;
     public ObjectOutputStream Out;
     
+    public String username;
+    
+    private KeyPair keyPair;
+    private PublicKey publicKey;
+    private PrivateKey privateKey;  
+    // just need to be a string  
+    private String serverpublicKey;
+    
     public SocketClient(Blabl frame, StyledDocument doc) throws IOException {
+    
+        // generate our keypair and save them for later usage
+        try { 
+            keyPair = buildKeyPair();
+            publicKey = keyPair.getPublic();
+            privateKey = keyPair.getPrivate();
+        } catch(Exception e) {}  
+    
         ui = frame; 
         serverAddr = ui.serverAddr; 
         port = ui.port; 
@@ -47,75 +71,98 @@ public class SocketClient implements Runnable{
         In = new ObjectInputStream(socket.getInputStream());                              
     }
     
+    public static KeyPair buildKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {    
+        // generate our keypair
+        KeyGenerator keyGenerator = KeyGenerator.getInstance("Blowfish");
+        keyGenerator.init(448);
+        KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+        keyPairGenerator.initialize(1024);
+        KeyPair keyPair = keyPairGenerator.genKeyPair();
+        return keyPair;       
+    }
+    
+    public static String getEncrypted(String data, String Key) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidKeySpecException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(Base64.getDecoder().decode(Key.getBytes())));
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        byte[] encryptedbytes = cipher.doFinal(data.getBytes());
+        return new String(Base64.getEncoder().encode(encryptedbytes));
+    }
+
+    public static String getDecrypted(String data, String Key) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+        Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+        PrivateKey pk = KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(Base64.getDecoder().decode(Key.getBytes())));
+        cipher.init(Cipher.DECRYPT_MODE, pk);
+        byte[] encryptedbytes = cipher.doFinal(Base64.getDecoder().decode(data.getBytes()));
+        return new String(encryptedbytes);
+    }
+    
     @Override
     public void run() {
         boolean keepRunning = true;
         ui.threadRunning = true;
         while(keepRunning) {
-            try {
+            try { 
+                       
                 Message msg = (Message) In.readObject();                
-                if(msg.type.equals("message")) {
+                System.out.println("Incoming : " + msg);
+                                
+                if(msg.type.equals("message")) {                
                     if(msg.recipient.equals(ui.username)) {
-                        if(!msg.sender.equals(ui.username)) {
-                            if(ui.windowHandler.getActiveState() == "iconified") {
-                                if(ui.pr("sound").equals("on")) {                            
-                                    ui.print_private("["+ msg.sender + "] " + msg.content);
-                                    System.out.println(ui.pr("sound"));
-                                    try {
-                                        URL url = this.getClass().getClassLoader().getResource("res/pm.wav");
-                                        AudioInputStream audioIn = AudioSystem.getAudioInputStream(url);
-                                        Clip clip = AudioSystem.getClip();
-                                        clip.open(audioIn);
-                                        clip.start();
-                                    } catch (UnsupportedAudioFileException e) {
-                                        e.printStackTrace();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    } catch (LineUnavailableException e) {
-                                        e.printStackTrace();
-                                    } catch(Exception e) { e.printStackTrace(); }
-                                    System.out.println("error #4");                                                                        
-                                } else {
-                                ui.print_private("["+ msg.sender + "] " + msg.content);
-                                System.out.println(ui.pr("sound"));
-                                }                               
-                            } else {
-                                ui.print_private("["+ msg.sender + "] " + msg.content);
-                            }
-                        } 
+                        ui.print_private("["+ msg.sender + "] " + msg.content);                             
                     } else {
-                        if(!msg.sender.equals(ui.username)) {
-                            ui.print_default("["+msg.sender +"] " + msg.content);
-                        }
+                        ui.print_default("["+msg.sender +"] " + msg.content);
                     }
+
                     if(msg.content.equals(".bye") && msg.sender.equals(ui.username)) {
                         ui.clientThread.stop();
                         ui.threadRunning = false;
                     }
                 }
+                
+                // login
                 else if(msg.type.equals("login")) {
                     if(msg.content.equals("TRUE")) {
                         ui.ButtonLogin.setEnabled(false); 
                         ui.ButtonRegistrieren.setEnabled(false);                        
                         ui.ButtonNachricht.setEnabled(true); 
                         ui.ButtonDateiSuchen.setEnabled(true);
-                        ui.print_default("Hallo " + msg.recipient + ", " + ui.pr("welcome"));                        
                         ui.FieldUsername.setEnabled(false); 
                         ui.FieldPasswort.setEnabled(false);
+                        ui.print_default("Du bist als " + msg.recipient + " angemeldet.");
+                        username = msg.recipient;
+                        String pk = new String(Base64.getEncoder().encode(publicKey.getEncoded()));
+                        send(new Message("publickey",username,pk,"SERVER")); 
+                    } else {
+                        ui.print_error("Du konntest nicht angemeldet werden.");
                     }
-                    else{
-                        ui.print_error("Anmeldefehler");
-                    }
+                    
                 }
+                
+                // we have received the test response and the servers public key, so we can start encrypting our messages. YEY
+                //
+                // serverkey should be base64 encoded so we can sent it as a string                
                 else if(msg.type.equals("test")) {
+
                     ui.ButtonVerbinden.setEnabled(false);                    
                     ui.ButtonLogin.setEnabled(true); 
                     ui.ButtonRegistrieren.setEnabled(true);                    
                     ui.FieldUsername.setEnabled(true); 
                     ui.FieldPasswort.setEnabled(true);                    
                     ui.FieldServer.setEditable(false); 
-                    ui.FieldPort.setEditable(false);
+                    ui.FieldPort.setEditable(false);                   
+                    ui.print_default("Verbindung hergestellt"); 
+                    ui.print_default("RSA Key vom Server empfangen"); 
+                    serverpublicKey = msg.content;                                      
+
                 }
+                else if(msg.type.equals("publickey")) {
+                  
+                    ui.print_default("Eigenen RSA Key an den Server gesendet");                                       
+
+                }
+                                
+                // new user has entered the room, so we have to update the userlist
                 else if(msg.type.equals("newuser")) {
                     if(!msg.content.equals(ui.username)) {
                         boolean exists = false;
@@ -127,10 +174,12 @@ public class SocketClient implements Runnable{
                         }
                         if(!exists){ 
                             ui.model.addElement(msg.content);
-                            ui.print_default(msg.content + " ist online");
+                            ui.print_default(msg.content + " ist jetzt online");
                         }
                     } 
                 }
+                
+                // we have got a response from server to our signup request
                 else if(msg.type.equals("signup")) {
                     if(msg.content.equals("TRUE")) {
                         ui.ButtonLogin.setEnabled(false); ui.ButtonRegistrieren.setEnabled(false);
@@ -141,6 +190,8 @@ public class SocketClient implements Runnable{
                         ui.print_error("Registrierungsfehler");
                     }
                 }
+                
+                // logout
                 else if(msg.type.equals("signout")) {
                     if(msg.content.equals(ui.username)) {
                         ui.print_default("Du hast den Chat verlassen");
@@ -159,6 +210,8 @@ public class SocketClient implements Runnable{
                         ui.print_default(msg.content + " ist offline");
                     }
                 }
+                
+                // someone want to send us a file
                 else if(msg.type.equals("upload_req")) {                    
                     if(JOptionPane.showConfirmDialog(ui, ("Willst du '"+msg.content+"' von "+msg.sender+" herunterladen?")) == 0) {                        
                         JFileChooser jf = new JFileChooser();
@@ -179,6 +232,8 @@ public class SocketClient implements Runnable{
                         send(new Message("upload_res", ui.username, "NO", msg.sender));
                     }
                 }
+                
+                // we have had sent a file to someone and got a response
                 else if(msg.type.equals("upload_res")) {
                     if(!msg.content.equals("NO")) {
                         int port  = Integer.parseInt(msg.content);
@@ -192,11 +247,14 @@ public class SocketClient implements Runnable{
                         ui.print_default("[SERVER]: "+msg.sender+" hat den Download abgelehnt");
                     }
                 }
+                
+                // anything else we dont know
                 else{
                     ui.print_error("unbekannter Fehler");
                 }
             }
             catch(Exception ex) {
+            
                 keepRunning = false;
                 ui.print_error("Verbindungsfehler");
                 ui.ButtonVerbinden.setEnabled(true); ui.FieldServer.setEditable(true); ui.FieldPort.setEditable(true);
@@ -207,9 +265,11 @@ public class SocketClient implements Runnable{
                 ui.clientThread.stop();                
                 ex.printStackTrace();
                 ui.threadRunning = false;
+                
             }
         }
-    }    
+    } 
+       
     public void send(Message msg){
         try {
             Out.writeObject(msg);
@@ -219,9 +279,35 @@ public class SocketClient implements Runnable{
         catch (IOException ex) {
             System.out.println("Exception SocketClient send()");
         }
-    }    
+    } 
+    
+    public void send_encrypted(Message msg){
+        try {
+        
+            // encrypt our message content            
+            //String base64message = new String(Base64.getEncoder().encodeToString(msg.content.getBytes()));
+            //msg.content = base64message;
+            String cipherText = getEncrypted(msg.content, serverpublicKey);
+            msg.content = cipherText;
+            
+            Out.writeObject(msg);
+            Out.flush();
+            System.out.println("Outgoing : "+msg.toString());            
+        } 
+        catch (IOException ex) {
+            System.out.println("Exception SocketClient send()");
+        }
+        catch(NoSuchAlgorithmException nsae) {}
+        catch(NoSuchPaddingException nspe) {}
+        catch(InvalidKeyException ike) {}
+        catch(InvalidKeySpecException ikse) {}
+        catch(IllegalBlockSizeException ibse) {}
+        catch(BadPaddingException bpe) {}
+    }
+
     public void closeThread(Thread t){
         t = null;
         ui.threadRunning = false;
     }
+    
 }

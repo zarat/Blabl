@@ -22,6 +22,13 @@ import org.w3c.dom.*;
 
 import java.util.Properties;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import javax.crypto.Cipher;
+
 // WindowHandler prüft, ob das Fenster minimiert ist oder nicht
 class WindowHandler extends WindowAdapter implements WindowListener, WindowFocusListener, WindowStateListener {
     public String activeState;
@@ -47,7 +54,7 @@ class WindowHandler extends WindowAdapter implements WindowListener, WindowFocus
 }
 
 // Das eigentliche GUI
-public class Blabl extends JFrame {
+public class Blabl extends JFrame {  
 
     public SocketClient client;
     public int port;
@@ -198,7 +205,7 @@ public class Blabl extends JFrame {
         model.addElement("All");
         Userlist.setSelectedIndex(0);        
         
-        // Listener ueberschreiben!!        
+        // Listener ueberschreiben        
         this.addWindowListener(new WindowListener() {
             @Override public void windowOpened(WindowEvent e) {}
             @Override public void windowClosing(WindowEvent e) {}
@@ -240,8 +247,8 @@ public class Blabl extends JFrame {
                 serverPanel = new JPanel();
                 LabelServer = new JLabel();
                 LabelPort = new JLabel();
-                FieldServer = new JTextField();
-                FieldPort = new JTextField();
+                FieldServer = new JTextField("127.0.0.1");
+                FieldPort = new JTextField("13000");
                 ButtonVerbinden = new JButton();
                 ButtonVerbinden.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -591,7 +598,7 @@ public class Blabl extends JFrame {
                 client = new SocketClient(this, doc);
                 clientThread = new Thread(client);
                 clientThread.start();
-                client.send(new Message("test", "testUser", "testContent", "SERVER"));
+                client.send(new Message("test", "test", "test", "SERVER"));
             } catch(Exception ex) {
                 print_error("Server nicht gefunden");
             }
@@ -602,8 +609,9 @@ public class Blabl extends JFrame {
     private void ButtonLoginActionPerformed(ActionEvent evt) {
         username = FieldUsername.getText();
         password = FieldPasswort.getText();        
-        if(!username.isEmpty() && !password.isEmpty()) {        
-            client.send(new Message("login", username, password, "SERVER"));        
+        if(!username.isEmpty() && !password.isEmpty()) { 
+            // encryption!!!       
+            client.send_encrypted(new Message("login", username, password, "SERVER"));
         }
     }
 
@@ -628,7 +636,7 @@ public class Blabl extends JFrame {
         username = FieldUsername.getText();
         password = FieldPasswort.getText();        
         if(!username.isEmpty() && !password.isEmpty()) {
-            client.send(new Message("signup", username, password, "SERVER"));
+            client.send_encrypted(new Message("signup", username, password, "SERVER"));
         }
     }
 
