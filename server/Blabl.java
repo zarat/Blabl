@@ -79,7 +79,7 @@ class GUI extends JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
         }    
     
-        setTitle("Blabl 0.1 Server"); 
+        setTitle("Blabl 0.2 Server"); 
         //setPreferredSize(new Dimension(700,300));
         setResizable(false);
         if(SystemTray.isSupported()){
