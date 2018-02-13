@@ -135,15 +135,14 @@ public class SocketClient implements Runnable{
                         ui.ButtonRegistrieren.setEnabled(false);                        
                         ui.ButtonNachricht.setEnabled(true); 
                         ui.ButtonDateiSuchen.setEnabled(true);
-			ui.FieldUsername.setEditable(false);
-			ui.FieldUsername.setEnabled(false);
-			ui.FieldPasswort.setEditable(false);
-			ui.FieldPasswort.setEnabled(false);
+                  			ui.FieldUsername.setEditable(false);
+                  			ui.FieldUsername.setEnabled(false);
+                  			ui.FieldPasswort.setEditable(false);
+                  			ui.FieldPasswort.setEnabled(false);
                         ui.print_default("Du bist als " + msg.recipient + " angemeldet.");
                         username = msg.recipient;
-			System.out.println("1: " + username);
                         String pk = new String(Base64.getEncoder().encode(publicKey.getEncoded()));
-                        send(new Message("publickey",username,pk,"SERVER"));
+                        send(new Message("publickey", username, pk, "SERVER"));
                     } else {
                         ui.print_error("Du konntest nicht angemeldet werden.");
                     }
@@ -162,26 +161,20 @@ public class SocketClient implements Runnable{
                     ui.FieldPasswort.setEnabled(true);                    
                     ui.FieldServer.setEditable(false); 
                     ui.FieldPort.setEditable(false);                   
-                    ui.print_default("Verbindung hergestellt"); 
-                    ui.print_default("RSA Key vom Server empfangen"); 
+                    ui.print_default("Verbindung hergestellt."); 
+                    ui.print_warning("ServerKey erhalten, ausgehende Inhalte werden nun verschlüsselt");
                     serverpublicKey = msg.content;                                      
 
                 }
+                
                 else if(msg.type.equals("publickey")) {
                   
-                    ui.print_default("Eigenen RSA Key an den Server gesendet");                                       
+                    ui.print_warning("Eigenen PublicKey an den Server übertragen. Alle Inhalte werden nun verschlüsselt");                                       
 
                 }
                                 
                 // new user has entered the room, so we have to update the userlist
                 else if(msg.type.equals("newuser")) {
-                
-        		    // decrypt the creds
-        		    try {
-                    String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
-                    String cipherText = getDecrypted(msg.content, priKey);
-                    msg.content = cipherText;
-        		    }catch(Exception e) {}
                 
                     if(!msg.content.equals(ui.username)) {
                         boolean exists = false;
@@ -218,9 +211,9 @@ public class SocketClient implements Runnable{
                         ui.ButtonNachricht.setEnabled(false); 
                         ui.FieldServer.setEditable(true); 
                         ui.FieldServer.setEnabled(true);
-			ui.FieldPort.setEditable(true);                        
+                        ui.FieldPort.setEditable(true);                        
                         ui.FieldPort.setEnabled(true);
-			for(int i = 1; i < ui.model.size(); i++){
+                        for(int i = 1; i < ui.model.size(); i++){
                             ui.model.removeElementAt(i);
                         }                        
                         ui.clientThread.stop();
@@ -304,13 +297,8 @@ public class SocketClient implements Runnable{
     
     public void send_encrypted(Message msg){
         try {
-        
-            // encrypt our message content            
-            //String base64message = new String(Base64.getEncoder().encodeToString(msg.content.getBytes()));
-            //msg.content = base64message;
             String cipherText = getEncrypted(msg.content, serverpublicKey);
             msg.content = cipherText;
-            
             Out.writeObject(msg);
             Out.flush();
             System.out.println("Outgoing : "+msg.toString());            
