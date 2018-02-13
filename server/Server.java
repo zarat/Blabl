@@ -130,16 +130,6 @@ public class Server extends Thread implements Runnable {
     
     public synchronized void handle(int ID, Message msg) {
     
-    // message functions
-    //
-    // .bye 
-    // login
-    // message
-    // test
-    // signup
-    // upload_req
-    // upload_res
-    
         System.out.println("Incoming : " + msg);
     
         // user logout
@@ -233,7 +223,7 @@ public class Server extends Thread implements Runnable {
                 } else {
                     
                     String noHTMLString = msg.content.replaceAll("\\<.*?\\>", "");                                    
-                    findUserThread(msg.recipient).send(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));                    
+                    findUserThread(msg.recipient).send_encrypted(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));                    
                     //clients[findClient(ID)].send(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));                    
                     
                 }                
@@ -313,20 +303,18 @@ public class Server extends Thread implements Runnable {
         //Message msg = new Message(type, sender, content, "All");
         for(int i = 0; i < clientCount; i++){        
             if(clients[i].username != sender) {  
-			// encrypt it using users public key
-			String encryptedText = "";
-			try {
-			    encryptedText = getEncrypted(content, clients[i].publicKey);
-			}
-			catch(NoSuchAlgorithmException nsae) {}
-			catch(NoSuchPaddingException nspe) {}
-			catch(InvalidKeyException ike) {}
-			catch(InvalidKeySpecException ikse) {}
-			catch(IllegalBlockSizeException ibse) {}
-			catch(BadPaddingException bpe) {}
-
-			Message msg = new Message(type, sender, encryptedText, "All");
-               
+          			// encrypt it using users public key
+          			String encryptedText = "";
+          			try {
+          			    encryptedText = getEncrypted(content, clients[i].publicKey);
+          			}
+          			catch(NoSuchAlgorithmException nsae) {}
+          			catch(NoSuchPaddingException nspe) {}
+          			catch(InvalidKeyException ike) {}
+          			catch(InvalidKeySpecException ikse) {}
+          			catch(IllegalBlockSizeException ibse) {}
+          			catch(BadPaddingException bpe) {}          
+          			Message msg = new Message(type, sender, encryptedText, "All");               
             		clients[i].send(msg);                
 	          }            
         }
@@ -446,7 +434,6 @@ class ClientThread extends Thread {
     }
     
     public void send_encrypted(Message msg) {
-        System.out.println("Outgoing : " + msg);
         String encryptedText = "";
         try {
             encryptedText = getEncrypted(msg.content, publicKey);
@@ -462,6 +449,7 @@ class ClientThread extends Thread {
         try {
             w.writeObject(msg);
             w.flush();
+            System.out.println("Outgoing : " + msg);
         } 
         catch (IOException e) {
             System.out.println("Exception [SocketClient : send(...)]");
