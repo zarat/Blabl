@@ -65,7 +65,7 @@ public class Server extends Thread implements Runnable {
             keyPair = buildKeyPair();
             publicKey = keyPair.getPublic();
             privateKey = keyPair.getPrivate();
-            logger.log("Schlüsselpaar erzeugt");
+            logger.log("Schl&uuml;sselpaar erzeugt");
         } catch(Exception e) {}
     
         port = new Integer(getProp("port"));
