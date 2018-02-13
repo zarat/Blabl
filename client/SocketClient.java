@@ -162,14 +162,14 @@ public class SocketClient implements Runnable{
                     ui.FieldServer.setEditable(false); 
                     ui.FieldPort.setEditable(false);                   
                     ui.print_default("Verbindung hergestellt."); 
-                    ui.print_warning("ServerKey erhalten, ausgehende Inhalte werden nun verschlüsselt");
+                    ui.print_warning("ServerKey erhalten, ausgehende Inhalte werden nun verschl&uuml;sselt");
                     serverpublicKey = msg.content;                                      
 
                 }
                 
                 else if(msg.type.equals("publickey")) {
                   
-                    ui.print_warning("Eigenen PublicKey an den Server übertragen. Alle Inhalte werden nun verschlüsselt");                                       
+                    ui.print_warning("Eigenen PublicKey an den Server &uuml;bertragen. Alle Inhalte werden nun verschl&uuml;sselt");                                       
 
                 }
                                 
