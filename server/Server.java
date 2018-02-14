@@ -136,7 +136,6 @@ public class Server extends Thread implements Runnable {
         if (msg.content.equals(".bye")) {
             Announce("signout", "SERVER", msg.sender);
             remove(ID); 
-            logger.log(msg.sender + " ist offline");
         } else {
         
             // user login
@@ -162,7 +161,6 @@ public class Server extends Thread implements Runnable {
                         clients[findClient(ID)].send(new Message("login", "SERVER", "TRUE", msg.sender));
                         Announce("newuser", "SERVER", msg.sender);
                         SendUserList(msg.sender);
-                        logger.log(msg.sender + " hat sich angemeldet");
                     } else {
                         clients[findClient(ID)].send(new Message("login", "SERVER", "FALSE", msg.sender));
                     }     
@@ -181,7 +179,6 @@ public class Server extends Thread implements Runnable {
                 String base64PublicKey = Base64.getEncoder().encodeToString(encodedPublicKey);
                 // and send it to the client
                 clients[findClient(ID)].send(new Message("test", "SERVER", base64PublicKey, msg.sender));
-                logger.log("Neue Verbindung");
                     
             }
             // after test message, the user send his publickey 
@@ -190,7 +187,6 @@ public class Server extends Thread implements Runnable {
                 clients[findClient(ID)].publicKey = msg.content;
                 // and send it to the client
                 clients[findClient(ID)].send(new Message("publickey", "SERVER", "OK", msg.sender));
-                logger.log("PublicKey von " + msg.sender + " erhalten");
                     
             }
                         
@@ -257,7 +253,6 @@ public class Server extends Thread implements Runnable {
                         
                         Announce("newuser", "SERVER", msg.sender);
                         SendUserList(msg.sender);
-                        logger.log(msg.sender + " hat sich registriert");
                         
                     } else {
                         clients[findClient(ID)].send(new Message("signup", "SERVER", "FALSE", msg.sender));
