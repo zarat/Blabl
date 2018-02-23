@@ -13,6 +13,11 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import javax.crypto.*;
 
+// message splitter
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Iterator;
 
 public class Server extends Thread implements Runnable {
     
@@ -141,11 +146,16 @@ public class Server extends Thread implements Runnable {
             // user login
             if(msg.type.equals("login")) {
             
+            String[] split = msg.content.split(":");
+            StringBuilder sb = new StringBuilder();
+            
+            for (int i = 0; i < split.length; i++) {
+            
                 // decrypt the creds
                 String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
                 String decryptedText = "";
                 try {
-                    decryptedText = getDecrypted(msg.content, priKey);
+                    decryptedText = getDecrypted(split[i], priKey);
                 }
                 catch(NoSuchAlgorithmException nsae) {}
                 catch(NoSuchPaddingException nspe) {}
@@ -154,6 +164,19 @@ public class Server extends Thread implements Runnable {
                 catch(IllegalBlockSizeException ibse) {}
                 catch(BadPaddingException bpe) {}
                 msg.content = decryptedText;
+            
+                sb.append(decryptedText);
+                
+                if (i != split.length - 1) {
+                    sb.append(" ");
+                }
+                
+            }
+            
+            String joined = sb.toString();
+            System.out.println(joined);            
+
+                msg.content = joined;
             
                 if(findUserThread(msg.sender) == null) {
                     if(db.checkLogin(msg.sender, msg.content)) {
@@ -194,21 +217,36 @@ public class Server extends Thread implements Runnable {
             //
             // message is encrypted with our public key
             // so first decrypt it using our private key
+            //
+            // content is now an array!!!
             else if(msg.type.equals("message")) {
             
-                // decrypt the creds
-                String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
-                String decryptedText = "";
-                try {
-                    decryptedText = getDecrypted(msg.content, priKey);
+                String[] split = msg.content.split(":");
+                StringBuilder sb = new StringBuilder();
+                
+                for (int i = 0; i < split.length; i++) {
+                
+                    // decrypt the creds
+                    String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+                    String decryptedText = "";
+                    try {
+                        decryptedText = getDecrypted(split[i], priKey);
+                    }
+                    catch(NoSuchAlgorithmException nsae) {}
+                    catch(NoSuchPaddingException nspe) {}
+                    catch(InvalidKeyException ike) {}
+                    catch(InvalidKeySpecException ikse) {}
+                    catch(IllegalBlockSizeException ibse) {}
+                    catch(BadPaddingException bpe) {}
+                    msg.content = decryptedText;
+                
+                    sb.append(decryptedText);
+                    
                 }
-                catch(NoSuchAlgorithmException nsae) {}
-                catch(NoSuchPaddingException nspe) {}
-                catch(InvalidKeyException ike) {}
-                catch(InvalidKeySpecException ikse) {}
-                catch(IllegalBlockSizeException ibse) {}
-                catch(BadPaddingException bpe) {}
-                msg.content = decryptedText;
+                
+                String joined = sb.toString();            
+
+                msg.content = joined;
  
                 // to all users
                 if(msg.recipient.equals("All")) {
@@ -228,11 +266,16 @@ public class Server extends Thread implements Runnable {
             // user signup
             else if(msg.type.equals("signup")) {
             
+            String[] split = msg.content.split(":");
+            StringBuilder sb = new StringBuilder();
+            
+            for (int i = 0; i < split.length; i++) {
+            
                 // decrypt the creds
                 String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
                 String decryptedText = "";
                 try {
-                    decryptedText = getDecrypted(msg.content, priKey);
+                    decryptedText = getDecrypted(split[i], priKey);
                 }
                 catch(NoSuchAlgorithmException nsae) {}
                 catch(NoSuchPaddingException nspe) {}
@@ -241,6 +284,19 @@ public class Server extends Thread implements Runnable {
                 catch(IllegalBlockSizeException ibse) {}
                 catch(BadPaddingException bpe) {}
                 msg.content = decryptedText;
+            
+                sb.append(decryptedText);
+                
+                if (i != split.length - 1) {
+                    sb.append(" ");
+                }
+                
+            }
+            
+            String joined = sb.toString();
+            System.out.println(joined);            
+
+                msg.content = joined;
             
                 if(findUserThread(msg.sender) == null) {
                 
@@ -298,19 +354,10 @@ public class Server extends Thread implements Runnable {
         //Message msg = new Message(type, sender, content, "All");
         for(int i = 0; i < clientCount; i++){        
             if(clients[i].username != sender) {  
-          			// encrypt it using users public key
-          			String encryptedText = "";
-          			try {
-          			    encryptedText = getEncrypted(content, clients[i].publicKey);
-          			}
-          			catch(NoSuchAlgorithmException nsae) {}
-          			catch(NoSuchPaddingException nspe) {}
-          			catch(InvalidKeyException ike) {}
-          			catch(InvalidKeySpecException ikse) {}
-          			catch(IllegalBlockSizeException ibse) {}
-          			catch(BadPaddingException bpe) {}          
-          			Message msg = new Message(type, sender, encryptedText, "All");               
-            		clients[i].send(msg);                
+                       
+          			Message msg = new Message(type, sender, content, "All");              
+            		clients[i].send_encrypted(msg); 
+                               
 	          }            
         }
     }
@@ -428,18 +475,31 @@ class ClientThread extends Thread {
         return new String(Base64.getEncoder().encode(encryptedbytes));
     }
     
-    public void send_encrypted(Message msg) {
-        String encryptedText = "";
-        try {
-            encryptedText = getEncrypted(msg.content, publicKey);
+    public void send_encrypted(Message msg) { 
+    
+        String text = msg.content;
+        String erg = "";
+        int index = 0;
+        while (index < text.length()) {
+        
+            String part = text.substring(index, Math.min(index + 100,text.length()));
+            
+            try {
+                String cipherText = getEncrypted(part, publicKey);
+                part = cipherText;            
+            }
+            catch(NoSuchAlgorithmException nsae) {}
+            catch(NoSuchPaddingException nspe) {}
+            catch(InvalidKeyException ike) {}
+            catch(InvalidKeySpecException ikse) {}
+            catch(IllegalBlockSizeException ibse) {}
+            catch(BadPaddingException bpe) {}
+        
+            erg += part + ":";
+            index += 100;
+            
         }
-        catch(NoSuchAlgorithmException nsae) {}
-        catch(NoSuchPaddingException nspe) {}
-        catch(InvalidKeyException ike) {}
-        catch(InvalidKeySpecException ikse) {}
-        catch(IllegalBlockSizeException ibse) {}
-        catch(BadPaddingException bpe) {}
-        msg.content = encryptedText;
+        msg.content = erg;
         
         try {
             w.writeObject(msg);
@@ -449,6 +509,7 @@ class ClientThread extends Thread {
         catch (IOException e) {
             System.out.println("Exception [SocketClient : send(...)]");
         }
+        
     }
             
     public int getID() {  
