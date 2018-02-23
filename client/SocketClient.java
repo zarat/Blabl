@@ -34,6 +34,12 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import javax.crypto.*;
 
+// message splitter
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Iterator;
+
 public class SocketClient implements Runnable{
     
     public int port;
@@ -108,13 +114,39 @@ public class SocketClient implements Runnable{
                 System.out.println("Incoming : " + msg);
                                 
                 if(msg.type.equals("message")) { 
+                
 
-		    // decrypt the creds
-		    try {
-			String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
-			String cipherText = getDecrypted(msg.content, priKey);
-                	msg.content = cipherText;
-		    }catch(Exception e) {}
+            String[] split = msg.content.split(":");
+            StringBuilder sb = new StringBuilder();
+            
+            for (int i = 0; i < split.length; i++) {
+            
+                // decrypt the creds
+                String priKey = new String(Base64.getEncoder().encode(privateKey.getEncoded()));
+                String decryptedText = "";
+                try {
+                    decryptedText = getDecrypted(split[i], priKey);
+                }
+                catch(NoSuchAlgorithmException nsae) {}
+                catch(NoSuchPaddingException nspe) {}
+                catch(InvalidKeyException ike) {}
+                catch(InvalidKeySpecException ikse) {}
+                catch(IllegalBlockSizeException ibse) {}
+                catch(BadPaddingException bpe) {}
+                msg.content = decryptedText;
+            
+                sb.append(decryptedText);
+                
+                if (i != split.length - 1) {
+                    //sb.append(" ");
+                }
+                
+            }
+            
+            String joined = sb.toString();
+            System.out.println(joined);
+            msg.content = joined;
+                
 		                   
                     if(msg.recipient.equals(ui.username)) {
                         ui.print_private("["+ msg.sender + "] " + msg.content);                             
@@ -295,23 +327,83 @@ public class SocketClient implements Runnable{
         }
     } 
     
-    public void send_encrypted(Message msg){
+    public void send_encrypted(Message msg) {
+    
+        String text = msg.content;
+        String erg = "";
+        int index = 0;
+        while (index < text.length()) {
+        
+            String part = text.substring(index, Math.min(index + 100,text.length()));
+            
+            try {
+                String cipherText = getEncrypted(part, serverpublicKey);
+                part = cipherText;            
+            }
+            catch(NoSuchAlgorithmException nsae) {}
+            catch(NoSuchPaddingException nspe) {}
+            catch(InvalidKeyException ike) {}
+            catch(InvalidKeySpecException ikse) {}
+            catch(IllegalBlockSizeException ibse) {}
+            catch(BadPaddingException bpe) {}
+        
+            erg += part + ":";
+            index += 100;
+            
+        }
+        
+        msg.content = erg;
+        
+        /*
+        String text = msg.content;
+        List<String> strings = new ArrayList<String>();
+        int index = 0;
+        while (index < text.length()) {
+            strings.add(text.substring(index, Math.min(index + 100,text.length())));
+            index += 100;
+        }
+        System.out.println(strings.toString());
+        
+        List<String> stringsarray = new ArrayList<String>();
+        Iterator<String> i = strings.iterator();
+        
+        while ( i.hasNext() ) {
+        
+            String item = i.next();
+        
+            try {
+                String cipherText = getEncrypted(item, serverpublicKey);
+                item = cipherText;            
+            }
+            catch(NoSuchAlgorithmException nsae) {}
+            catch(NoSuchPaddingException nspe) {}
+            catch(InvalidKeyException ike) {}
+            catch(InvalidKeySpecException ikse) {}
+            catch(IllegalBlockSizeException ibse) {}
+            catch(BadPaddingException bpe) {}
+            
+            stringsarray.add(item);
+        
+        }
+        
+        msg.content = "" + stringsarray;
+        */
+        
         try {
-            String cipherText = getEncrypted(msg.content, serverpublicKey);
-            msg.content = cipherText;
             Out.writeObject(msg);
             Out.flush();
-            System.out.println("Outgoing : "+msg.toString());            
-        } 
-        catch (IOException ex) {
-            System.out.println("Exception SocketClient send()");
+            System.out.println("Outgoing : "+msg.toString());
+        }catch(IOException ioe) { }
+    
+    }
+    
+    private static List<String> getParts(String string, int partitionSize) {    
+        List<String> parts = new ArrayList<String>();
+        int len = string.length();
+        for (int i=0; i<len; i+=partitionSize) {
+            parts.add(string.substring(i, Math.min(len, i + partitionSize)));
         }
-        catch(NoSuchAlgorithmException nsae) {}
-        catch(NoSuchPaddingException nspe) {}
-        catch(InvalidKeyException ike) {}
-        catch(InvalidKeySpecException ikse) {}
-        catch(IllegalBlockSizeException ibse) {}
-        catch(BadPaddingException bpe) {}
+        return parts;
     }
 
     public void closeThread(Thread t){
