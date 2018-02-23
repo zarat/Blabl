@@ -354,41 +354,6 @@ public class SocketClient implements Runnable{
         
         msg.content = erg;
         
-        /*
-        String text = msg.content;
-        List<String> strings = new ArrayList<String>();
-        int index = 0;
-        while (index < text.length()) {
-            strings.add(text.substring(index, Math.min(index + 100,text.length())));
-            index += 100;
-        }
-        System.out.println(strings.toString());
-        
-        List<String> stringsarray = new ArrayList<String>();
-        Iterator<String> i = strings.iterator();
-        
-        while ( i.hasNext() ) {
-        
-            String item = i.next();
-        
-            try {
-                String cipherText = getEncrypted(item, serverpublicKey);
-                item = cipherText;            
-            }
-            catch(NoSuchAlgorithmException nsae) {}
-            catch(NoSuchPaddingException nspe) {}
-            catch(InvalidKeyException ike) {}
-            catch(InvalidKeySpecException ikse) {}
-            catch(IllegalBlockSizeException ibse) {}
-            catch(BadPaddingException bpe) {}
-            
-            stringsarray.add(item);
-        
-        }
-        
-        msg.content = "" + stringsarray;
-        */
-        
         try {
             Out.writeObject(msg);
             Out.flush();
