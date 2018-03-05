@@ -2,16 +2,14 @@
 
 Verschlüsselter Instant Messenger mit Userverwaltung, Filesharing, Chat und Privatnachrichten. Unless otherwise noted, the source files are distributed under the license found in the LICENSE file.
 
-### Download and Install
-
-#### Binary Distributions
+## Binary Distributions
 
 Die Binaries in den Releases sind zu 100% mit OpenJDK kompiliert.
 
-#### Install From Source
+## Install From Source
 
 Repository herunterladen oder klonen, kompilieren und fertig.
 
-### Contributing
+# Contributing
 
 Gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden.
