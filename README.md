@@ -1,6 +1,6 @@
 # Blabl - Secure Instant Messenger
 
-Verschlüsselter Instant Messenger mit Userverwaltung, Filesharing, Chat und Privatnachrichten.
+Verschlüsselter Instant Messenger mit Userverwaltung, Filesharing, Chat und Privatnachrichten. Das Projekt befindet sich noch in aktiver Entwicklung und ist als POC anzusehen. Richtige Funktionsweise und Datenintegrität wird in keiner Weise garantiert.
 
 ## Installation
 
