@@ -22,4 +22,4 @@ Repository herunterladen oder klonen, kompilieren und fertig.
 
 ## Mitmachen
 
-Sehr gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden.
+Sehr gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden. Einfach neuen Branch erstellen und wieder in Developement mergen.
