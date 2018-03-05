@@ -10,6 +10,6 @@ Die Binaries in den Releases sind zu 100% mit OpenJDK kompiliert.
 
 Repository herunterladen oder klonen, kompilieren und fertig.
 
-# Contributing
+## Contributing
 
 Gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden.
