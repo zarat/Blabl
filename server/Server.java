@@ -248,19 +248,28 @@ public class Server extends Thread implements Runnable {
 
                 msg.content = joined;
  
-                // to all users
-                if(msg.recipient.equals("All")) {
-
-                    AnnounceEncrypted("message", msg.sender, msg.content);
+                if (msg.content.equals(".bye")) {
+                
+                    Announce("signout", "SERVER", msg.sender);
+                    remove(ID); 
                     
-                // or a single user
                 } else {
-                    
-                    String noHTMLString = msg.content.replaceAll("\\<.*?\\>", "");                                    
-                    findUserThread(msg.recipient).send_encrypted(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));                    
-                    //clients[findClient(ID)].send(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));                    
-                    
-                }                
+ 
+                    // to all users
+                    if(msg.recipient.equals("All")) {
+    
+                        AnnounceEncrypted("message", msg.sender, msg.content);
+                        
+                    // or a single user
+                    } else {
+                        
+                        String noHTMLString = msg.content.replaceAll("\\<.*?\\>", "");                                    
+                        findUserThread(msg.recipient).send_encrypted(new Message(msg.type, msg.sender, noHTMLString, msg.recipient));                    
+			    
+                    }     
+                
+                }
+		    
             }
             
             // user signup
