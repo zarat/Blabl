@@ -30,15 +30,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-// DOM - für XML?
+// DOM - fÃ¼r XML?
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-public class IM { 
+public class Blabl { 
 
     public static void main(String[] args) {     
-        JFrame gui = new GUI(); 
+        System.setProperty("java.net.preferIPv4Stack","true");
+	JFrame gui = new GUI(); 
         gui.show();        
     } 
     
@@ -78,13 +79,13 @@ class GUI extends JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
         }    
     
-        setTitle("IM 0.1 Server alpha"); 
+        setTitle("Blabl 0.2 Server"); 
         //setPreferredSize(new Dimension(700,300));
         setResizable(false);
         if(SystemTray.isSupported()){
 
             tray=SystemTray.getSystemTray();
-            java.net.URL imageURL = GUI.class.getResource("im.png");
+            URL imageURL = GUI.class.getResource("im.png");
             ImageIcon ico = new ImageIcon(imageURL);        
             Image image=Toolkit.getDefaultToolkit().getImage(imageURL);            
             ActionListener exitListener=new ActionListener() {
@@ -108,7 +109,7 @@ class GUI extends JFrame {
                 }
             });
             popup.add(defaultItem);
-            trayIcon=new TrayIcon(image, "IM", popup);
+            trayIcon=new TrayIcon(image, "Blabl Server", popup);
             trayIcon.setImageAutoSize(true);
         }
         addWindowStateListener(new WindowStateListener() {
@@ -136,7 +137,8 @@ class GUI extends JFrame {
                 }
             }
         });
-        setIconImage(Toolkit.getDefaultToolkit().getImage("im.png"));                
+        URL imageURL = GUI.class.getResource("im.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));                
         
         fileChooser = new JFileChooser();
                  
@@ -231,7 +233,7 @@ class GUI extends JFrame {
     
     public void closeWindow() {
         String ObjButtons[] = {"Beenden","abbrechen"};
-        int PromptResult = JOptionPane.showOptionDialog(null,"Wollen Sie die SimpleMail wirklich beenden?","SimpleMail beenden",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[0]);
+        int PromptResult = JOptionPane.showOptionDialog(null,"Wollen Sie die Blabl wirklich beenden?","Blabl beenden",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[0]);
         if(PromptResult==JOptionPane.YES_OPTION) {
             System.exit(0);
         }    
@@ -239,7 +241,7 @@ class GUI extends JFrame {
     
     private void XMLButtonAction(java.awt.event.ActionEvent evt) {    
         fileChooser.setCurrentDirectory(new File("."));        
-        File XMLConfigFile = new File("./Data.xml"); 
+        File XMLConfigFile = new File("Data.xml"); 
         if (!XMLConfigFile.exists()) {
             try {        
                 DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -250,7 +252,7 @@ class GUI extends JFrame {
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
                 DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult(new File("./Data.xml"));                
+                StreamResult result = new StreamResult(new File("Data.xml"));                
                 transformer.transform(source, result);                        
         	} catch (ParserConfigurationException pce) {
                 pce.printStackTrace();

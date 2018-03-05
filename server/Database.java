@@ -5,6 +5,8 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import javax.xml.transform.OutputKeys; 
 import org.w3c.dom.*;
 
 // MD5
@@ -111,9 +113,18 @@ public class Database {
                 Element newuser = doc.createElement("user");
                 Element newusername = doc.createElement("username"); newusername.setTextContent(username);
                 Element newpassword = doc.createElement("password"); newpassword.setTextContent(secretString);            
-                newuser.appendChild(newusername); newuser.appendChild(newpassword); data.appendChild(newuser);            
+
+                newuser.appendChild(newusername); 
+		newuser.appendChild(newpassword); 
+		data.appendChild(newuser);          
+
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
+
+		// https://stackoverflow.com/questions/22790146/create-xml-file-with-linebreaks
+		transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
                 DOMSource source = new DOMSource(doc);
                 StreamResult result = new StreamResult(new File(filePath));
                 transformer.transform(source, result); 

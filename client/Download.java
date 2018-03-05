@@ -11,9 +11,9 @@ public class Download implements Runnable{
     public String saveTo = "";
     public InputStream In;
     public FileOutputStream Out;
-    public ChatFrame ui;
+    public Blabl ui;
     
-    public Download(String saveTo, ChatFrame ui){
+    public Download(String saveTo, Blabl ui){
         try {
             server = new ServerSocket(0);
             port = server.getLocalPort();

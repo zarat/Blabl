@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.net.URL;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -10,7 +11,8 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 import javax.swing.text.DefaultCaret;
 
-import oracle.jrockit.jfr.JFR;
+// not available in OpenJDK :(
+//import oracle.jrockit.jfr.JFR;
 
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
@@ -19,6 +21,13 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.*;
 
 import java.util.Properties;
+
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import javax.crypto.Cipher;
 
 // WindowHandler prüft, ob das Fenster minimiert ist oder nicht
 class WindowHandler extends WindowAdapter implements WindowListener, WindowFocusListener, WindowStateListener {
@@ -45,7 +54,7 @@ class WindowHandler extends WindowAdapter implements WindowListener, WindowFocus
 }
 
 // Das eigentliche GUI
-public class ChatFrame extends JFrame {
+public class Blabl extends JFrame {  
 
     public SocketClient client;
     public int port;
@@ -58,7 +67,7 @@ public class ChatFrame extends JFrame {
     public WindowHandler windowHandler;
     public HTMLEditorKit kit;
     public HTMLDocument doc;
-    public int threadRunning = 0;
+    public boolean threadRunning = true;
     
     public int fontSize = 4;
     public String frameTitle;
@@ -104,9 +113,9 @@ public class ChatFrame extends JFrame {
     public JPanel userPanel;
     public JScrollPane userlistPanel;
     
-    public ChatFrame() { 
+    public Blabl() { 
     
-        setTitle("IM 0.1 Client alpha");
+        setTitle("Blabl 0.2");
         setLocationRelativeTo(null);
         setResizable(true);        
         setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
@@ -120,7 +129,7 @@ public class ChatFrame extends JFrame {
         if(SystemTray.isSupported()){
 
             tray=SystemTray.getSystemTray();
-            java.net.URL imageURL = ChatFrame.class.getResource("im.png");
+            URL imageURL = Blabl.class.getResource("im.png");
             ImageIcon ico = new ImageIcon(imageURL);        
             Image image=Toolkit.getDefaultToolkit().getImage(imageURL);            
             ActionListener exitListener=new ActionListener() {
@@ -144,7 +153,7 @@ public class ChatFrame extends JFrame {
                 }
             });
             popup.add(defaultItem);
-            trayIcon=new TrayIcon(image, "IM", popup);
+            trayIcon=new TrayIcon(image, "Blabl", popup);
             trayIcon.setImageAutoSize(true);
         }
         addWindowStateListener(new WindowStateListener() {
@@ -172,7 +181,8 @@ public class ChatFrame extends JFrame {
                 }
             }
         });
-        setIconImage(Toolkit.getDefaultToolkit().getImage("im.png"));
+        URL imageURL = Blabl.class.getResource("im.png");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(imageURL));
         
         kit = new HTMLEditorKit();
         doc = new HTMLDocument();
@@ -186,14 +196,16 @@ public class ChatFrame extends JFrame {
         
         Chat.setEditorKit(kit);
         Chat.setDocument(doc);
-
+        Chat.setEditable(false);
+        Chat.setFocusable(false);
+                                
         Userlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         Userlist.setModel((model = new DefaultListModel()));        
         
         model.addElement("All");
         Userlist.setSelectedIndex(0);        
         
-        // Listener ueberschreiben!!        
+        // Listener ueberschreiben        
         this.addWindowListener(new WindowListener() {
             @Override public void windowOpened(WindowEvent e) {}
             @Override public void windowClosing(WindowEvent e) {}
@@ -207,7 +219,7 @@ public class ChatFrame extends JFrame {
     
     public void closeWindow() {    
         String ObjButtons[] = {"Beenden","abbrechen"};
-        int PromptResult = JOptionPane.showOptionDialog(null,"Wollen Sie die Anwendung wirklich beenden?","Warnung",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
+        int PromptResult = JOptionPane.showOptionDialog(null,"Wollen Sie Blabl wirklich beenden?","Warnung",JOptionPane.DEFAULT_OPTION,JOptionPane.WARNING_MESSAGE,null,ObjButtons,ObjButtons[1]);
         if(PromptResult==JOptionPane.YES_OPTION) {
             if(username!=null) {
                 try{ client.send(new Message("message", username, ".bye", "SERVER")); clientThread.stop();  }catch(Exception ex){ex.printStackTrace();}
@@ -235,8 +247,8 @@ public class ChatFrame extends JFrame {
                 serverPanel = new JPanel();
                 LabelServer = new JLabel();
                 LabelPort = new JLabel();
-                FieldServer = new JTextField();
-                FieldPort = new JTextField();
+                FieldServer = new JTextField("127.0.0.1");
+                FieldPort = new JTextField("13000");
                 ButtonVerbinden = new JButton();
                 ButtonVerbinden.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -247,7 +259,11 @@ public class ChatFrame extends JFrame {
                 LabelUsername = new JLabel();
                 LabelPasswort = new JLabel();
                 FieldUsername = new JTextField();
+		FieldUsername.setEnabled(false);
+		FieldUsername.setEnabled(false);
                 FieldPasswort = new JTextField();
+		FieldPasswort.setEditable(false);
+		FieldPasswort.setEnabled(false);
                 ButtonLogin = new JButton();
                 ButtonLogin.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent evt) {
@@ -270,6 +286,14 @@ public class ChatFrame extends JFrame {
                 
             controlPanel = new JPanel();        
                 FieldNachricht = new JTextField();
+                FieldNachricht.addActionListener(new ActionListener() {
+                
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                       ButtonNachrichtActionPerformed(e);
+                    }
+                });                
+                
                 ButtonNachricht = new JButton();
                 ButtonNachricht.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -494,8 +518,7 @@ public class ChatFrame extends JFrame {
         prop = new Properties();
         InputStream input = null;
         try {
-            String filename = "config.properties";
-            input = ChatFrame.class.getClassLoader().getResourceAsStream(filename); 
+            input = new FileInputStream("config.properties");
             prop.load(input);
             return prop.getProperty(proper);
         } 
@@ -518,6 +541,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
     
     public void print_error(String str) { 
@@ -531,6 +555,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
     
     public void print_warning(String str) {
@@ -544,6 +569,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
       
     public void print_private(String str) {
@@ -557,6 +583,7 @@ public class ChatFrame extends JFrame {
         } catch(Exception e) { 
             e.printStackTrace();
         }
+        Chat.setCaretPosition(doc.getLength());
     }
       
     public boolean isWin32() {
@@ -575,7 +602,13 @@ public class ChatFrame extends JFrame {
                 client = new SocketClient(this, doc);
                 clientThread = new Thread(client);
                 clientThread.start();
-                client.send(new Message("test", "testUser", "testContent", "SERVER"));
+		FieldServer.setEnabled(false);
+		FieldPort.setEnabled(false);
+		FieldUsername.setEnabled(true);
+		FieldUsername.setEditable(true);
+		FieldPasswort.setEnabled(true);
+		FieldPasswort.setEditable(true);
+                client.send(new Message("test", "test", "test", "SERVER"));
             } catch(Exception ex) {
                 print_error("Server nicht gefunden");
             }
@@ -586,8 +619,9 @@ public class ChatFrame extends JFrame {
     private void ButtonLoginActionPerformed(ActionEvent evt) {
         username = FieldUsername.getText();
         password = FieldPasswort.getText();        
-        if(!username.isEmpty() && !password.isEmpty()) {        
-            client.send(new Message("login", username, password, "SERVER"));        
+        if(!username.isEmpty() && !password.isEmpty()) { 
+            // encryption!!!       
+            client.send_encrypted(new Message("login", username, password, "SERVER"));
         }
     }
 
@@ -602,7 +636,7 @@ public class ChatFrame extends JFrame {
             } else {
                 print_private(" an ["+target+"] " + msg);
             }
-            client.send(new Message("message", username, msg, target));
+            client.send_encrypted(new Message("message", username, msg, target));
             Chat.setCaretPosition(Chat.getDocument().getLength());
         }
     }
@@ -612,7 +646,7 @@ public class ChatFrame extends JFrame {
         username = FieldUsername.getText();
         password = FieldPasswort.getText();        
         if(!username.isEmpty() && !password.isEmpty()) {
-            client.send(new Message("signup", username, password, "SERVER"));
+            client.send_encrypted(new Message("signup", username, password, "SERVER"));
         }
     }
 
@@ -649,7 +683,7 @@ public class ChatFrame extends JFrame {
         }        
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ChatFrame().setVisible(true);
+                new Blabl().setVisible(true);
             }
         });
     }
