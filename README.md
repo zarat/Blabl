@@ -2,9 +2,9 @@
 
 Verschlüsselter Instant Messenger mit Userverwaltung, Filesharing, Chat und Privatnachrichten. Das Projekt befindet sich noch in aktiver Entwicklung und ist als POC anzusehen. 
 
-- Algorithmus: RSA 1024
+- Algorithmus: RSA
 - KeyGen: Blowfish
-- Cipher:  RSA/NONE/PKCS1Padding
+- Cipher: PKCS1Padding
 
 Richtige Funktionsweise und Datenintegrität wird in keiner Weise garantiert.
 
