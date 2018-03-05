@@ -22,4 +22,4 @@ Repository herunterladen oder klonen, kompilieren und fertig.
 
 ## Mitmachen
 
-Gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden.
+Sehr gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden.
