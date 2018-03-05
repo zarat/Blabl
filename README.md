@@ -4,13 +4,15 @@ Verschlüsselter Instant Messenger mit Userverwaltung, Filesharing, Chat und Pri
 
 ## Installation
 
+Die Installation benötigt keine Abhängigkeiten, keine 3rd Party Libs und ist mit OpenJDK kompiliert.
+
 ### Binaries
 
-Die Binaries in den Releases sind mit OpenJDK kompiliert.
+Die Binaries können einfach mit der JRE gestartet werden.
 
 ### From Source
 
-Repository herunterladen oder klonen, kompilieren und fertig. Keine Abhängigkeiten - keine 3rd Party Libs.
+Repository herunterladen oder klonen, kompilieren und fertig.
 
 ## Mitmachen
 
