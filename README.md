@@ -1,7 +1,4 @@
 # Blabl (alpha)
-Verschlüsselter Instant Messenger mit Userverwaltung, P2P Filesharing, Chat und Privatnachrichten.
-
-# Blabl - Secure Instant Messenger
 
 Verschlüsselter Instant Messenger mit Userverwaltung, P2P Filesharing, Chat und Privatnachrichten. Das Projekt befindet sich noch in aktiver Entwicklung und ist als POC anzusehen. 
 
