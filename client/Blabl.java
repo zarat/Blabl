@@ -618,9 +618,9 @@ public class Blabl extends JFrame {
     // Login
     private void ButtonLoginActionPerformed(ActionEvent evt) {
         username = FieldUsername.getText();
-        password = FieldPasswort.getText();        
-        if(!username.isEmpty() && !password.isEmpty()) { 
-            // encryption!!!       
+        password = FieldPasswort.getText(); 
+	FieldPasswort.setText("********");
+        if(!username.isEmpty() && !password.isEmpty()) {       
             client.send_encrypted(new Message("login", username, password, "SERVER"));
         }
     }
@@ -644,7 +644,8 @@ public class Blabl extends JFrame {
     // Registrieren
     private void ButtonRegistrierenActionPerformed(ActionEvent evt) {
         username = FieldUsername.getText();
-        password = FieldPasswort.getText();        
+        password = FieldPasswort.getText();
+	FieldPasswort.setText("********");
         if(!username.isEmpty() && !password.isEmpty()) {
             client.send_encrypted(new Message("signup", username, password, "SERVER"));
         }
