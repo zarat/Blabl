@@ -10,11 +10,11 @@ Richtige Funktionsweise und Datenintegrität wird in keiner Weise garantiert.
 
 ## Installation
 
-Die Installation benötigt keine Abhängigkeiten, keine 3rd Party Libs und ist mit OpenJDK kompiliert.
+Die Installation benötigt keine Abhängigkeiten, keine 3rd Party Libs und kann mit OpenJDK kompiliert werden.
 
 ### Binaries
 
-Die Binaries können einfach mit der JRE gestartet werden.
+Die Binaries benötigen keine Abhängigkeiten, keine 3rd Party Libs und wurden mit OpenJDK kompiliert.
 
 ### From Source
 
@@ -22,4 +22,4 @@ Repository herunterladen oder klonen, kompilieren und fertig.
 
 ## Mitmachen
 
-Modifikationen einfach in den Developement branch pullen.
+Modifikationen bitte in den Developement branch pullen.
