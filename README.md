@@ -10,15 +10,15 @@ Richtige Funktionsweise und Datenintegrität wird in keiner Weise garantiert.
 
 ## Installation
 
-Die Installation benötigt keine Abhängigkeiten, keine 3rd Party Libs und kann mit OpenJDK kompiliert werden.
+Blabl benötigt keine Abhängigkeiten, keine 3rd Party Libs und ist zu 100% OpenJDK kompatibel.
 
 ### Binaries
 
-Die Binaries benötigen keine Abhängigkeiten, keine 3rd Party Libs und wurden mit OpenJDK kompiliert.
+Download und starten.
 
 ### From Source
 
-Repository herunterladen oder klonen, kompilieren und fertig.
+Repository herunterladen oder klonen, kompilieren und starten.
 
 ## Mitmachen
 
