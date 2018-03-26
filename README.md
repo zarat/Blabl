@@ -22,4 +22,4 @@ Repository herunterladen oder klonen, kompilieren und fertig.
 
 ## Mitmachen
 
-Sehr gerne können Verbesserungen und Kritik über den üblichen Weg eingebracht werden. Einfach forken und neuen Pull Request in Developement erstellen.
+Modifikationen einfach in den Developement branch pullen.
