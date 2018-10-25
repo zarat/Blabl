@@ -173,8 +173,7 @@ public class Server extends Thread implements Runnable {
                 
             }
             
-            String joined = sb.toString();
-            System.out.println(joined);            
+            String joined = sb.toString();            
 
                 msg.content = joined;
             
