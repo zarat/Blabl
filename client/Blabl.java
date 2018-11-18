@@ -89,7 +89,7 @@ public class Blabl extends JFrame {
     public JEditorPane Chat;
     public JTextField FieldDatei;
     public JTextField FieldNachricht;
-    public JTextField FieldPasswort;
+    public JPasswordField FieldPasswort;
     public JTextField FieldPort;
     public JTextField FieldServer;
     public JTextField FieldUsername;
@@ -261,7 +261,7 @@ public class Blabl extends JFrame {
                 FieldUsername = new JTextField();
 		FieldUsername.setEnabled(false);
 		FieldUsername.setEnabled(false);
-                FieldPasswort = new JTextField();
+                FieldPasswort = new JPasswordField();
 		FieldPasswort.setEditable(false);
 		FieldPasswort.setEnabled(false);
                 ButtonLogin = new JButton();
@@ -619,7 +619,7 @@ public class Blabl extends JFrame {
     private void ButtonLoginActionPerformed(ActionEvent evt) {
         username = FieldUsername.getText();
         password = FieldPasswort.getText(); 
-	FieldPasswort.setText("********");
+	FieldPasswort.setText("");
         if(!username.isEmpty() && !password.isEmpty()) {       
             client.send_encrypted(new Message("login", username, password, "SERVER"));
         }
