@@ -6,7 +6,7 @@ Verschlüsselter Instant Messenger mit Userverwaltung, P2P Filesharing, Chat und
 - KeyGen: Blowfish
 - Cipher: PKCS1Padding
 
-Richtige Funktionsweise und Datenintegrität wird in keiner Weise garantiert.
+Richtige Funktionsweise und Datenintegrität wird in keiner Weise garantiert. P2P Filetransfers funktionieren bei Peers hinter einem NAT noch nicht automatisch (NAT Traversal).
 
 ## Installation
 
