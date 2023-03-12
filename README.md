@@ -1,6 +1,6 @@
 # Blabl (alpha)
 
-Verschlüsselter Instant Messenger mit Userverwaltung, P2P Filesharing, Chat und Privatnachrichten. 
+Verschlüsselter Instant Messenger mit P2P Filesharing. 
 
 - Algorithmus: RSA
 - KeyGen: Blowfish
