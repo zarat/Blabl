@@ -6,6 +6,12 @@ Verschlüsselter Instant Messenger mit P2P Filesharing.
 - KeyGen: Blowfish
 - Cipher: PKCS1Padding
 
+## Server
+![Blabl Server](blabl-server.PNG)
+
+## Client
+![Blabl Server](blabl-client.PNG)
+
 ## Upcoming
 
 - Presence
