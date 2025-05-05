@@ -2,7 +2,7 @@
 
 Verschlüsselter Instant Messenger mit P2P Filesharing. 
 
-- Algorithmus: RSA
+- Algorithmus: RSA (ECB Modus)
 - KeyGen: Blowfish (1024 Bit)
 - Cipher: PKCS1Padding
 
