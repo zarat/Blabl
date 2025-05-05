@@ -514,6 +514,7 @@ public class Blabl extends JFrame {
     }
     
     // Einstellungen aus Properties Datei lesen
+    // Todo: What if no entry was found
     public String pr(String proper) {
         prop = new Properties();
         InputStream input = null;
