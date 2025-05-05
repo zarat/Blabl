@@ -8,5 +8,6 @@ Verschlüsselter Instant Messenger mit P2P Filesharing.
 
 ## Upcoming
 
+- Presence
 - Encrypted Up/Downloads
 - End-to-End Encrypted Messages
