@@ -1,6 +1,6 @@
 import java.io.*;
 import java.net.*;
-import java.*;
+
 import javax.swing.*;
 
 import java.util.Properties;
